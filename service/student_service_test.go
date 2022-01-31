@@ -63,5 +63,28 @@ func TestSaveWhenStructValidationThrowsAnError(t *testing.T){
 }
 
 func TestThatStudentSavedCanBeFoundWithAnId(t *testing.T)  {
-	studentMock.On("")
+
+	studentMock.On("GetStudentById","1236674").Return(student,nil)
+
+	studentService = StudentServiceImp{studentMock}
+
+	student,_ := studentMock.GetStudentById("1236674")
+
+	assert.NotNil(t, student)
+
+	assert.Equal(t, student,student)
+}
+
+func TestThatNonExistingStudentCannotBeFound(t *testing.T)  {
+	emptyStudent := models.Student{}
+
+	studentErrorMock.On("GetStudentById","rr555353").Return(emptyStudent,studentErrorMock.Err)
+
+	studentService = StudentServiceImp{studentErrorMock}
+
+	_, err := studentErrorMock.GetStudentById("rr555353")
+
+	assert.NotNil(t, err)
+
+	assert.Error(t, studentErrorMock.Err,"")
 }
