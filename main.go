@@ -7,10 +7,11 @@ import (
 )
 
 func main() {
+	os.Setenv("PORT","9090")
 	port:= os.Getenv("PORT")
 
 	if port == ""{
-		port = "8000"
+		port = "9090"
 	}
 
 	router := gin.New()
