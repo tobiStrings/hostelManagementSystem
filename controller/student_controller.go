@@ -36,11 +36,20 @@ func SaveStudent() gin.HandlerFunc{
 
 		if msg =="user not created because validation cannot be done"{
 			c.JSON(http.StatusBadRequest,gin.H{"error":msg})
+			return
 		}else
 		if msg == "user not created because student cannot be inserted"{
 			c.JSON(http.StatusInternalServerError,gin.H{"error":msg})
+			return
+		}else
+		if msg == "user already exist"{
+			c.JSON(http.StatusBadRequest,gin.H{"error":msg})
+			return
 		}
-
+		if msg == "mongo: no documents in result"{
+			c.JSON(http.StatusInternalServerError,gin.H{"error":msg})
+			return
+		}
 		c.JSON(http.StatusOK,newStudent)
 	}
 }
