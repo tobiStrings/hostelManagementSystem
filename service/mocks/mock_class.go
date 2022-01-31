@@ -22,7 +22,11 @@ func (s *StudentMock) SaveStudent(dto dtos.StudentDto) (models.Student, error) {
 }
 
 func (s *StudentMock) GetStudentById(studentId string) (models.Student, error) {
-	return student,nil
+	args := s.Called(studentId)
+
+	studentToReturn := models.Student{}
+
+	return studentToReturn,args.Error(1)
 }
 
 type StudentErrorTest struct {
@@ -41,5 +45,8 @@ func (s *StudentErrorTest) SaveStudent(dto dtos.StudentDto) (models.Student, err
 }
 
 func (s *StudentErrorTest) GetStudentById(studentId string) (models.Student, error) {
-	return student,nil
+
+	studentToReturn := models.Student{}
+
+	return studentToReturn,s.Err
 }
