@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -36,12 +37,28 @@ var studentCollection *mongo.Collection = repositories.OpenCollection(repositori
 
 
 func (studentService *StudentServiceImp) SaveStudent(dto dtos.StudentDto) (models.Student, error){
+	var ctx,cancel =context.WithTimeout(context.Background(),100*time.Second)
+
+	foundStudent := models.Student{}
+
+	matric_number :=dto.MaricNumber
+
+	defer cancel()
+		st := studentCollection.FindOne(ctx, bson.M{"matric_number": matric_number}).Decode(&foundStudent)
+		if st != nil{
+			fmt.Println("Error")
+			fmt.Println(st.Error())
+			return models.Student{}, errors.New(st.Error())
+		}
+		if &foundStudent != nil{
+			return foundStudent,errors.New("user already exist")
+		}
+
 
 	var newStudent models.Student
 
 	newStudent = MapDtoToStudent(dto,newStudent)
 
-	var ctx,cancel =context.WithTimeout(context.Background(),100*time.Second)
 
 	validationErr := validate.Struct(newStudent)
 
