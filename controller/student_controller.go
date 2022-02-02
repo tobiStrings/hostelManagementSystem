@@ -42,7 +42,7 @@ func SaveStudent() gin.HandlerFunc{
 			c.JSON(http.StatusInternalServerError,gin.H{"error":msg})
 			return
 		}else
-		if msg == "user already exist"{
+		if msg == "student already exist"{
 			c.JSON(http.StatusBadRequest,gin.H{"error":msg})
 			return
 		}
