@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"hostelManagementSystem/dtos"
 	"hostelManagementSystem/repositories"
-	"hostelManagementSystem/service"
+	"hostelManagementSystem/service/student_service"
 	"log"
 	"net/http"
 )
@@ -14,7 +14,7 @@ import (
 
 var studentCollection *mongo.Collection = repositories.OpenCollection(repositories.Client,"student")
 var validate = validator.New()
-var studentService = new(service.StudentServiceImp)
+var studentService = new(student_service.StudentServiceImp)
 
 func SaveStudent() gin.HandlerFunc{
 	return func(c *gin.Context) {
