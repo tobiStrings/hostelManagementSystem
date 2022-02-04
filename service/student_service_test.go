@@ -47,7 +47,7 @@ func TestSaveStudent(t *testing.T)  {
 	returnedStudent, _ := studentMock.SaveStudent(studentDto)
 
 
-	studentService = student_service.StudentServiceImp{studentMock}
+	studentService = student_service.StudentServiceImp{}
 
 	assert.NotNil(t, returnedStudent)
 }
@@ -56,7 +56,7 @@ func TestSaveWhenStructValidationThrowsAnError(t *testing.T){
 
 	studentErrorMock.On("SaveStudent",studentDto).Return(student,studentErrorMock.Err)
 
-	studentService = student_service.StudentServiceImp{studentErrorMock}
+	studentService = student_service.StudentServiceImp{}
 
 	_, err := studentErrorMock.SaveStudent(studentDto)
 
@@ -69,7 +69,7 @@ func TestSaveStudentWhenStudentHasAlreadyBeenSaved(t *testing.T)  {
 	returnedStudent, _ := studentMock.SaveStudent(studentDto)
 
 
-	studentService = student_service.StudentServiceImp{studentMock}
+	studentService = student_service.StudentServiceImp{}
 
 	assert.NotNil(t, returnedStudent)
 
@@ -77,7 +77,7 @@ func TestSaveStudentWhenStudentHasAlreadyBeenSaved(t *testing.T)  {
 
 	studentErrorMock.On("SaveStudent",studentDto).Return(models.Student{},studentErrorMock.Err)
 
-	studentService = student_service.StudentServiceImp{studentErrorMock}
+	studentService = student_service.StudentServiceImp{}
 
 	_, err := studentErrorMock.SaveStudent(studentDto)
 
@@ -87,7 +87,7 @@ func TestThatStudentSavedCanBeFoundWithAnId(t *testing.T)  {
 
 	studentMock.On("GetStudentById","1236674").Return(student,nil)
 
-	studentService = student_service.StudentServiceImp{studentMock}
+	studentService = student_service.StudentServiceImp{}
 
 	student,_ := studentMock.GetStudentById("1236674")
 
@@ -101,7 +101,7 @@ func TestThatNonExistingStudentCannotBeFound(t *testing.T)  {
 
 	studentErrorMock.On("GetStudentById","rr555353").Return(emptyStudent,studentErrorMock.Err)
 
-	studentService = student_service.StudentServiceImp{studentErrorMock}
+	studentService = student_service.StudentServiceImp{}
 
 	_, err := studentErrorMock.GetStudentById("rr555353")
 
