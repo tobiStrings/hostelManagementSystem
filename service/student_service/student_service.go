@@ -1,4 +1,4 @@
-package service
+package student_service
 
 import (
 	"context"
@@ -24,10 +24,10 @@ func MapDtoToStudent(dto dtos.StudentDto,student models.Student) models.Student{
 type StudentService interface {
 	SaveStudent(dto dtos.StudentDto) (models.Student,error)
 	GetStudentById(studentId string) (models.Student,error)
+	GetStudentByMatricNumber(matricNumber string)(models.Student,error)
 }
 
 type StudentServiceImp struct {
-	studentService StudentService
 }
 
 var validate = validator.New()
@@ -42,7 +42,7 @@ func (studentService *StudentServiceImp) SaveStudent(dto dtos.StudentDto) (model
 
 	defer cancel()
 
-	err2 := studentCollection.FindOne(ctx,bson.M{"matricnumber":dto.MaricNumber}).Decode(&result)
+	err2 := studentCollection.FindOne(ctx,bson.M{"matricnumber": dto.MaricNumber}).Decode(&result)
 
 	if err2 != nil{
 		var newStudent models.Student
@@ -84,6 +84,23 @@ func (studentService *StudentServiceImp) GetStudentById(studentId string) (model
 	objId, _ := primitive.ObjectIDFromHex(studentId)
 
 	err := studentCollection.FindOne(ctx,bson.M{"id": objId}).Decode(&studentToBeReturned)
+
+	if err != nil{
+		return models.Student{},errors.New("student not found")
+	}
+
+	return studentToBeReturned,nil
+}
+
+func (studentService *StudentServiceImp)GetStudentByMatricNumber(matricNumber string)(models.Student,error) {
+	var ctx,cancel =context.WithTimeout(context.Background(),10*time.Second)
+
+	var studentToBeReturned models.Student
+
+	defer cancel()
+
+
+	err := studentCollection.FindOne(ctx,bson.M{"matricnumber": matricNumber}).Decode(&studentToBeReturned)
 
 	if err != nil{
 		return models.Student{},errors.New("student not found")
