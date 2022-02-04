@@ -1,6 +1,9 @@
 package models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
+)
 
 type Hostel struct {
 	HostelId primitive.ObjectID `json:"hostel_id"`
@@ -10,7 +13,6 @@ type Hostel struct {
 type Bed struct {
 	BedId primitive.ObjectID `json:"bed_id"`
 	BedNumber uint64 `json:"bed_number" binding:"required"`
-	//StudentAssigned Student `json:"student_assigned" binding:"required"`
 }
 
 type Room struct {
@@ -19,4 +21,6 @@ type Room struct {
 	RoomName string `json:"room_name" binding:"required,min=4,max=12"`
 	RoomNumber uint64 `json:"room_number" binding:"required,min=1,max=8"`
 	NumberOfAvailableBeds uint64 `json:"number_of_available_beds" binding:"required,min=0,max=15"`
+	DateCreated time.Time
+	DateUpdated time.Time
 }
