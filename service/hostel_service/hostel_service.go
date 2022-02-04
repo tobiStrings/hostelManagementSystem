@@ -12,10 +12,9 @@ import (
 	"time"
 )
 
-var studentCollection *mongo.Collection = repositories.OpenCollection(repositories.Client,"student")
 var roomCollection *mongo.Collection = repositories.OpenCollection(repositories.Client,"room")
-var bedCollection *mongo.Collection = repositories.OpenCollection(repositories.Client,"bed")
-var hostelCollection *mongo.Collection = repositories.OpenCollection(repositories.Client,"hostel")
+//var bedCollection *mongo.Collection = repositories.OpenCollection(repositories.Client,"bed")
+//var hostelCollection *mongo.Collection = repositories.OpenCollection(repositories.Client,"hostel")
 
 
 type HostelService interface {
@@ -46,17 +45,19 @@ func (hostelServiceIpl *HostelServiceImpl) AssignBedsToStudents(dto dtos.GetBedS
 	msg = errFindingStudent.Error()
 
 	if errFindingStudent != nil{
-		return models.Bed{},errors.New(msg + " and cannot be assigned a bed space")
+		return models.Bed{},errors.New(msg)
 	}
 
 	if &student != nil{
 
 		err := roomCollection.FindOne(ctx,bson.M{"roomname":dto.RoomName}).Decode(&room)
 
-		if err != nil || &room == nil{
+		if err != nil {
 			return models.Bed{},errors.New(err.Error())
+		}else
+		if  &room == nil {
+			return models.Bed{},errors.New("room does not exist")
 		}
-
 		if room.NumberOfAvailableBeds != 0{
 
 			student.Room = room
@@ -78,7 +79,7 @@ func (hostelServiceIpl *HostelServiceImpl) AssignBedsToStudents(dto dtos.GetBedS
 		}
 	}
 
-	return models.Bed{},nil
+	return models.Bed{},errors.New("student cannot be assigned a bed space")
 }
 
 func verifyDtoValues(dto dtos.GetBedSpaceDto) error{
