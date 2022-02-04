@@ -6,6 +6,7 @@ import (
 	"hostelManagementSystem/dtos"
 	"hostelManagementSystem/models"
 	"hostelManagementSystem/service/mocks"
+	"hostelManagementSystem/service/student_service"
 	"testing"
 )
 
@@ -13,7 +14,7 @@ var student models.Student
 
 var studentDto dtos.StudentDto
 
-var studentService StudentServiceImp
+var studentService student_service.StudentServiceImp
 
 var studentErrorMock *mocks.StudentErrorTest
 
@@ -31,7 +32,7 @@ func TestMapDtoToStudent(t *testing.T) {
 
 	studentDto  = dtos.NewStudentDto("Titobiloluwa","Ligali",23,"154760")
 
-	studentMapped :=MapDtoToStudent(studentDto,student)
+	studentMapped := student_service.MapDtoToStudent(studentDto,student)
 
 	assert.NotNil(t, studentMapped,"student not nil")
 
@@ -46,7 +47,7 @@ func TestSaveStudent(t *testing.T)  {
 	returnedStudent, _ := studentMock.SaveStudent(studentDto)
 
 
-	studentService = StudentServiceImp{studentMock}
+	studentService = student_service.StudentServiceImp{studentMock}
 
 	assert.NotNil(t, returnedStudent)
 }
@@ -55,18 +56,38 @@ func TestSaveWhenStructValidationThrowsAnError(t *testing.T){
 
 	studentErrorMock.On("SaveStudent",studentDto).Return(student,studentErrorMock.Err)
 
-	studentService = StudentServiceImp{studentErrorMock}
+	studentService = student_service.StudentServiceImp{studentErrorMock}
 
 	_, err := studentErrorMock.SaveStudent(studentDto)
 
 	assert.NotNil(t, err)
 }
+func TestSaveStudentWhenStudentHasAlreadyBeenSaved(t *testing.T)  {
+	studentMock.On("SaveStudent",studentDto).Return(student,nil)
 
+
+	returnedStudent, _ := studentMock.SaveStudent(studentDto)
+
+
+	studentService = student_service.StudentServiceImp{studentMock}
+
+	assert.NotNil(t, returnedStudent)
+
+	//Saving the same student the second time
+
+	studentErrorMock.On("SaveStudent",studentDto).Return(models.Student{},studentErrorMock.Err)
+
+	studentService = student_service.StudentServiceImp{studentErrorMock}
+
+	_, err := studentErrorMock.SaveStudent(studentDto)
+
+	assert.NotNil(t, err)
+}
 func TestThatStudentSavedCanBeFoundWithAnId(t *testing.T)  {
 
 	studentMock.On("GetStudentById","1236674").Return(student,nil)
 
-	studentService = StudentServiceImp{studentMock}
+	studentService = student_service.StudentServiceImp{studentMock}
 
 	student,_ := studentMock.GetStudentById("1236674")
 
@@ -80,7 +101,7 @@ func TestThatNonExistingStudentCannotBeFound(t *testing.T)  {
 
 	studentErrorMock.On("GetStudentById","rr555353").Return(emptyStudent,studentErrorMock.Err)
 
-	studentService = StudentServiceImp{studentErrorMock}
+	studentService = student_service.StudentServiceImp{studentErrorMock}
 
 	_, err := studentErrorMock.GetStudentById("rr555353")
 
