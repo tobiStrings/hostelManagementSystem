@@ -12,6 +12,8 @@ type Student struct {
 	MatricNumber string    `json:"matric_number" binding:"required,min=6,max=6"`
 	DateCreated  time.Time `json:"date_created"`
 	DateUpdated time.Time `json:"date_updated"`
+	Room Room `json:"room"`
+	Bed Bed `json:"bed"`
 	StudentId string `json:"student_id"`
 }
 
