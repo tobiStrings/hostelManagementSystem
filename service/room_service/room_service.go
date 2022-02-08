@@ -39,24 +39,23 @@ func (roomService *RoomServiceImpl) SaveRoom(saveRoomDto dtos.SaveRoomDto)(model
 	defer cancel()
 
 	err =roomCollection.FindOne(ctx,bson.M{"roomname":saveRoomDto.RoomName}).Decode(&room)
-
 	if err != nil{
-		return models.Room{}, errors.New(err.Error())
+		if saveRoomDto.RoomName == room.RoomName {
+			return models.Room{},errors.New("Room has already been created ")
+		}
+
+		room = mapDtoToRoom(saveRoomDto,room)
+		room.DateCreated, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+		room.DateUpdated, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+		room.Beds = make([]models.Bed,saveRoomDto.NumberOfAvailableBeds)
+		_,err=roomCollection.InsertOne(ctx,room)
+		if err != nil {
+			return models.Room{},errors.New(err.Error())
+		}
+		return room,nil
 	}
 
-	if saveRoomDto.RoomName == room.RoomName {
-		return models.Room{},errors.New("Room has already been created ")
-	}
-
-	room = mapDtoToRoom(saveRoomDto,room)
-	room.DateCreated, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-	room.DateUpdated, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-	room.Beds = make([]models.Bed,saveRoomDto.NumberOfAvailableBeds)
-	_,err=roomCollection.InsertOne(ctx,room)
-	if err != nil {
-		return models.Room{},errors.New(err.Error())
-	}
-	return room,nil
+	return models.Room{}, nil
 }
 
 func validateDtoInputs(dto dtos.SaveRoomDto)error{

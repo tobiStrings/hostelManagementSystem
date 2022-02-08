@@ -24,34 +24,31 @@ func CreateRoom() gin.HandlerFunc {
 		}
 
 		room,err := roomService.SaveRoom(saveRoomDto)
-
-		msg := err.Error()
-		if err != nil{
+		var msg string
+		if err != nil {
+			msg = err.Error()
+		}
 			if msg == "Please enter room name "{
 				c.JSON(http.StatusBadRequest,gin.H{"error":msg})
 				return
-			}
-
+			}else
 			if msg == "Please enter Room number "{
 				c.JSON(http.StatusBadRequest,gin.H{"error":msg})
 				return
-			}
-
+			}else
 			if msg == "Please enter number of available beds "{
 				c.JSON(http.StatusBadRequest,gin.H{"error":msg})
 				return
-			}
-
+			}else
 			if msg =="mongo: no documents in result"{
 				c.JSON(http.StatusInternalServerError,gin.H{"error":msg})
 				return
-			}
-
+			}else
 			if msg == "Room has already been created "{
 				c.JSON(http.StatusBadRequest,gin.H{"error":msg})
 				return
 			}
-		}
+
 		c.JSON(http.StatusOK,room)
 	}
 }
