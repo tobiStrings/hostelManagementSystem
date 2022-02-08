@@ -50,3 +50,29 @@ func (s *StudentErrorTest) GetStudentById(studentId string) (models.Student, err
 
 	return studentToReturn,s.Err
 }
+
+type RoomMock struct {
+	mock.Mock
+}
+
+func (r *RoomMock) SaveRoom(saveRoomDto dtos.SaveRoomDto)(models.Room,error) {
+	args :=r.Called(saveRoomDto)
+
+	roomToReturn := models.Room{}
+
+	var ret = args.Error(1)
+
+	return roomToReturn, ret
+}
+
+type RoomMockError struct {
+	mock.Mock
+	Err error
+}
+
+func (r *RoomMockError)SaveRoom(saveRoomDto dtos.SaveRoomDto)(models.Room,error){
+
+	roomToBeReturned := models.Room{}
+
+	return roomToBeReturned, r.Err
+}
