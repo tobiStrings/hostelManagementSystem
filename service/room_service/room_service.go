@@ -25,7 +25,7 @@ type RoomServiceImpl struct {
 
 }
 
-func (roomService RoomServiceImpl) SaveRoom(saveRoomDto dtos.SaveRoomDto)(models.Room,error) {
+func (roomService *RoomServiceImpl) SaveRoom(saveRoomDto dtos.SaveRoomDto)(models.Room,error) {
 	err := validateDtoInputs(saveRoomDto)
 
 	if err != nil{
@@ -46,16 +46,17 @@ func (roomService RoomServiceImpl) SaveRoom(saveRoomDto dtos.SaveRoomDto)(models
 
 	if saveRoomDto.RoomName == room.RoomName {
 		return models.Room{},errors.New("Room has already been created ")
-	} else {
-		mapDtoToRoom(saveRoomDto,room)
-		room.DateCreated, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-		room.DateUpdated, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-		_,err=roomCollection.InsertOne(ctx,room)
-		if err != nil {
-			return models.Room{},errors.New(err.Error())
-		}
-		return room,nil
 	}
+
+	room = mapDtoToRoom(saveRoomDto,room)
+	room.DateCreated, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	room.DateUpdated, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	room.Beds = make([]models.Bed,saveRoomDto.NumberOfAvailableBeds)
+	_,err=roomCollection.InsertOne(ctx,room)
+	if err != nil {
+		return models.Room{},errors.New(err.Error())
+	}
+	return room,nil
 }
 
 func validateDtoInputs(dto dtos.SaveRoomDto)error{
@@ -71,8 +72,26 @@ func validateDtoInputs(dto dtos.SaveRoomDto)error{
 	return nil
 }
 
-func mapDtoToRoom(dto dtos.SaveRoomDto, room models.Room)  {
+func mapDtoToRoom(dto dtos.SaveRoomDto, room models.Room) models.Room {
 	room.RoomName = dto.RoomName
 	room.RoomNumber = dto.RoomNumber
 	room.NumberOfAvailableBeds = dto.NumberOfAvailableBeds
+	return room
+}
+
+func (roomServiceImpl *RoomServiceImpl)DeleteRoomByRoomId(roomId string)error{
+	return nil
+}
+
+
+func (roomServiceImpl *RoomServiceImpl)FindRoomById(roomId string)(models.Room,error){
+	return models.Room{},nil
+}
+
+func (roomServiceImpl *RoomServiceImpl)FindRoomByRoomName(roomName string)(models.Room,error){
+	return models.Room{},nil
+}
+
+func (roomServiceImpl *RoomServiceImpl)GetNumberOfAvailableBedsByRoomName(roomName string)uint64{
+	return 0
 }
